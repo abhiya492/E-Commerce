@@ -1,0 +1,30 @@
+{
+  "name": "e-commerce",
+  "version": "1.0.0",
+  "main": "backend/server.js",
+  "scripts": {
+    "dev": "nodemon backend/server.js",
+    "start": "node backend/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.5.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "stripe": "^17.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
