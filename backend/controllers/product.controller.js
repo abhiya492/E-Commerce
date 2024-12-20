@@ -41,30 +41,46 @@ export const getFeaturedProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
 	try {
-		const { name, description, price, image, category } = req.body;
-
-		let cloudinaryResponse = null;
-
-		if (image) {
-			cloudinaryResponse = await cloudinary.uploader.upload(image, { folder: "products" });
+	  console.log("Request body received:", req.body);
+  
+	  const { name, description, price, image, category } = req.body;
+  
+	  if (!name || !description || !price || !category) {
+		return res.status(400).json({ message: "Missing required fields" });
+	  }
+  
+	  console.log("Valid input received. Preparing to upload image...");
+  
+	  let cloudinaryResponse = null;
+	  if (image) {
+		try {
+		  cloudinaryResponse = await cloudinary.uploader.upload(image, { folder: "products" });
+		  console.log("Image uploaded successfully:", cloudinaryResponse.secure_url);
+		} catch (cloudinaryError) {
+		  console.log("Cloudinary upload error:", cloudinaryError.message);
+		  return res.status(500).json({ message: "Cloudinary upload failed", error: cloudinaryError.message });
 		}
-
-		const product = await Product.create({
-			name,
-			description,
-			price,
-			image: cloudinaryResponse?.secure_url ? cloudinaryResponse.secure_url : "",
-			category,
-		});
-
-		res.status(201).json(product);
+	  }
+  
+	  console.log("Creating product in the database...");
+	  const product = await Product.create({
+		name,
+		description,
+		price,
+		image: cloudinaryResponse?.secure_url || "",
+		category,
+	  });
+  
+	  console.log("Product created successfully:", product);
+	  res.status(201).json(product);
 	} catch (error) {
-		console.log("Error in createProduct controller", error.message);
-		res.status(500).json({ message: "Server error", error: error.message });
+	  console.log("Error in createProduct controller:", error.stack || error.message);
+	  res.status(500).json({ message: "Server error occurred", error: error.message });
 	}
-};
+  };
+  
 
-export const deleteProduct = async (req, res) => {
+  export const deleteProduct = async (req, res) => {
 	try {
 		const product = await Product.findById(req.params.id);
 
@@ -90,6 +106,7 @@ export const deleteProduct = async (req, res) => {
 		res.status(500).json({ message: "Server error", error: error.message });
 	}
 };
+  
 
 export const getRecommendedProducts = async (req, res) => {
 	try {
