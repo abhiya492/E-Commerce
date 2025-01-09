@@ -1,6 +1,7 @@
 import { redis } from '../lib/redis.js';
 import User from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 const generateToken = (userId) => {
     const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
@@ -35,10 +36,11 @@ export const signup = async (req, res) => {
     if (userExists) {
         return res.status(400).json({ message: 'User already exists' });
     }
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user=await User.create({
         name:`${firstName} ${lastName}`,
         email,
-        password,
+        password: hashedPassword,
         isAdmin: false,
     });
 
