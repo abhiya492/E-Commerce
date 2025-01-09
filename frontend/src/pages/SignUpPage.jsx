@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { UserPlus, Mail, Lock, User, ArrowRight, Loader } from "lucide-react";
+import { UserPlus, Mail, Lock, User, ArrowRight, Loader, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useUserStore } from "../stores/useUserStore";
 
@@ -11,12 +11,15 @@ const SignUpPage = () => {
 		password: "",
 		confirmPassword: "",
 	});
+	const [successMessage, setSuccessMessage] = useState("");
 
 	const { signup, loading } = useUserStore();
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		signup(formData);
+		setSuccessMessage("Signup successful!");
+		setTimeout(() => setSuccessMessage(""), 3000);
 	};
 
 	return (
@@ -145,6 +148,13 @@ const SignUpPage = () => {
 							)}
 						</button>
 					</form>
+
+						{successMessage && (
+							<div className='mt-4 flex items-center text-emerald-400'>
+								<CheckCircle className='mr-2 h-5 w-5' />
+								{successMessage}
+							</div>
+						)}
 
 					<p className='mt-8 text-center text-sm text-gray-400'>
 						Already have an account?{" "}

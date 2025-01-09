@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { LogIn, Mail, Lock, ArrowRight, Loader } from "lucide-react";
+import { LogIn, Mail, Lock, ArrowRight, Loader, CheckCircle } from "lucide-react";
 import { useUserStore } from "../stores/useUserStore";
 
 const LoginPage = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [successMessage, setSuccessMessage] = useState("");
 
 	const { login, loading } = useUserStore();
 
@@ -14,6 +15,8 @@ const LoginPage = () => {
 		e.preventDefault();
 		console.log(email, password);
 		login(email, password);
+		setSuccessMessage("Login successful!");
+		setTimeout(() => setSuccessMessage(""), 3000);
 	};
 
 	return (
@@ -100,6 +103,13 @@ const LoginPage = () => {
 							)}
 						</button>
 					</form>
+
+						{successMessage && (
+							<div className='mt-4 flex items-center text-emerald-400'>
+								<CheckCircle className='mr-2 h-5 w-5' />
+								{successMessage}
+							</div>
+						)}
 
 					<p className='mt-8 text-center text-sm text-gray-400'>
 						Not a member?{" "}

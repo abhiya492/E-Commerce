@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { PlusCircle, Upload, Loader } from "lucide-react";
+import { PlusCircle, Upload, Loader, CheckCircle } from "lucide-react";
 import { useProductStore } from "../stores/useProductStore";
 
 const categories = ["jeans", "t-shirts", "shoes", "glasses", "jackets", "suits", "bags"];
@@ -13,6 +13,7 @@ const CreateProductForm = () => {
 		category: "",
 		image: "",
 	});
+	const [successMessage, setSuccessMessage] = useState("");
 
 	const { createProduct, loading } = useProductStore();
 
@@ -21,6 +22,8 @@ const CreateProductForm = () => {
 		try {
 			await createProduct(newProduct);
 			setNewProduct({ name: "", description: "", price: "", category: "", image: "" });
+			setSuccessMessage("Product created successfully!");
+			setTimeout(() => setSuccessMessage(""), 3000);
 		} catch {
 			console.log("error creating a product");
 		}
@@ -174,6 +177,12 @@ const CreateProductForm = () => {
 					)}
 				</button>
 			</form>
+			{successMessage && (
+				<div className='mt-4 flex items-center text-emerald-400'>
+					<CheckCircle className='mr-2 h-5 w-5' />
+					{successMessage}
+				</div>
+			)}
 		</motion.div>
 	);
 };
