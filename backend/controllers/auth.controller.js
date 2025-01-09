@@ -89,6 +89,7 @@ export const signup = async (req, res) => {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ message: error.errors });
         }
+        console.error("Unexpected error in signup function:", error);
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
@@ -122,6 +123,7 @@ export const verifyOtp = async (req, res) => {
             role: user.role,
         });
     } catch (error) {
+        console.error("Unexpected error in verifyOtp function:", error);
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
@@ -147,7 +149,7 @@ export const login = async (req, res) => {
 			res.status(400).json({ message: "Invalid email or password" });
 			}
 	} catch (error) {
-		console.log("Error in login controller", error.message);
+		console.error("Unexpected error in login function:", error);
 		res.status(500).json({ message: error.message });
 	}
 };
@@ -164,7 +166,7 @@ export const logout = async (req, res) => {
 		res.clearCookie("refreshToken");
 		res.json({ message: "Logged out successfully" });
 	} catch (error) {
-		console.log("Error in logout controller", error.message);
+		console.error("Unexpected error in logout function:", error);
 		res.status(500).json({ message: "Server error", error: error.message });
 	}
 };
@@ -196,7 +198,7 @@ export const refreshToken = async (req, res) => {
 
 		res.json({ message: "Token refreshed successfully" });
 	} catch (error) {
-		console.log("Error in refreshToken controller", error.message);
+		console.error("Unexpected error in refreshToken function:", error);
 		res.status(500).json({ message: "Server error", error: error.message });
 	}
 };
@@ -205,6 +207,7 @@ export const getProfile = async (req, res) => {
 	try {
 		res.json(req.user);
 	} catch (error) {
+		console.error("Unexpected error in getProfile function:", error);
 		res.status(500).json({ message: "Server error", error: error.message });
 	}
 };
