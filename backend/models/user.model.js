@@ -42,6 +42,10 @@ const userSchema = new mongoose.Schema({
         enum: ["customer", "admin"],
         default: "customer",
     },
+    otp: {
+        type: String,
+        required: false,
+    },
 }, { timestamps: true });
 
 
