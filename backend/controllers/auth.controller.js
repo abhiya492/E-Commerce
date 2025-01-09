@@ -1,6 +1,8 @@
 import { redis } from '../lib/redis.js';
 import User from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
+import { z } from 'zod';
 
 const generateToken = (userId) => {
     const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
@@ -28,41 +30,100 @@ const setCookie = (res, accessToken, refreshToken) => {
     );
 }
 
-export const signup = async (req, res) => {
-    const { email, password, firstName, lastName } = req.body;
-    try {
-        const userExists = await User.findOne({ email });
-    if (userExists) {
-        return res.status(400).json({ message: 'User already exists' });
-    }
-    const user=await User.create({
-        name:`${firstName} ${lastName}`,
-        email,
-        password,
-        isAdmin: false,
+const signupSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(6),
+    firstName: z.string().min(1),
+    lastName: z.string().min(1),
+});
+
+const generateOtp = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+const sendOtpEmail = async (email, otp) => {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
     });
 
-    //generate token
-    const { accessToken,refreshToken } =generateToken(user._id);
-    await storeRefreshToken(user._id, refreshToken);
-    //send token in cookie
-    setCookie(res, accessToken, refreshToken);
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Your OTP Code',
+        text: `Your OTP code is ${otp}`,
+    };
 
-    //const token=user.createJWT();
-    res.status(201).json({ user:{
+    await transporter.sendMail(mailOptions);
+};
+
+export const signup = async (req, res) => {
+    const { email, password, firstName, lastName } = req.body;
+
+    try {
+        signupSchema.parse(req.body);
+
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        const otp = generateOtp();
+
+        const user = await User.create({
+            name: `${firstName} ${lastName}`,
+            email,
+            password,
+            isAdmin: false,
+            otp,
+        });
+
+        await sendOtpEmail(email, otp);
+
+        res.status(201).json({ message: 'User created successfully. Please verify your OTP.' });
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).json({ message: error.errors });
+        }
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+export const verifyOtp = async (req, res) => {
+    const { email, otp } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        if (user.otp !== otp) {
+            return res.status(400).json({ message: 'Invalid OTP' });
+        }
+
+        user.otp = null;
+        await user.save();
+
+        const { accessToken, refreshToken } = generateToken(user._id);
+        await storeRefreshToken(user._id, refreshToken);
+        setCookie(res, accessToken, refreshToken);
+
+        res.json({
             _id: user._id,
             name: user.name,
             email: user.email,
-            isAdmin: user.isAdmin,
             role: user.role,
-    }, message: 'User created successfully' });
-        
+        });
     } catch (error) {
         res.status(500).json({ message: 'Something went wrong' });
-        
     }
-    
-}
+};
+
 export const login = async (req, res) => {
 	try {
 		const { email, password } = req.body;

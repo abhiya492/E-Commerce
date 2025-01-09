@@ -17,12 +17,27 @@ export const useUserStore = create((set, get) => ({
 
 		try {
 			const res = await axios.post("/auth/signup", { name, email, password });
-			set({ user: res.data, loading: false });
+			toast.success(res.data.message);
+			set({ loading: false });
 		} catch (error) {
 			set({ loading: false });
 			toast.error(error.response.data.message || "An error occurred");
 		}
 	},
+
+	verifyOtp: async (email, otp) => {
+		set({ loading: true });
+
+		try {
+			const res = await axios.post("/auth/verify-otp", { email, otp });
+			set({ user: res.data, loading: false });
+			toast.success("OTP verified successfully");
+		} catch (error) {
+			set({ loading: false });
+			toast.error(error.response.data.message || "Invalid OTP");
+		}
+	},
+
 	login: async (email, password) => {
 		set({ loading: true });
 
