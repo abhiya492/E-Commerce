@@ -89,6 +89,14 @@ export const signup = async (req, res) => {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ message: error.errors });
         }
+        if (error.code === 11000) {
+            console.error("Database error in signup function:", error);
+            return res.status(400).json({ message: 'User already exists' });
+        }
+        if (error.message.includes('nodemailer')) {
+            console.error("Email service error in signup function:", error);
+            return res.status(500).json({ message: 'Failed to send OTP email' });
+        }
         console.error("Unexpected error in signup function:", error);
         res.status(500).json({ message: 'Something went wrong' });
     }
