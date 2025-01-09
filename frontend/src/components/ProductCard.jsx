@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { ShoppingCart } from "lucide-react";
 import { useUserStore } from "../stores/useUserStore";
 import { useCartStore } from "../stores/useCartStore";
+import { motion } from "framer-motion";
 
 const ProductCard = ({ product }) => {
 	const { user } = useUserStore();
@@ -18,9 +19,13 @@ const ProductCard = ({ product }) => {
 	};
 
 	return (
-		<div className='flex w-full relative flex-col overflow-hidden rounded-lg border border-gray-700 shadow-lg'>
+		<motion.div
+			className='flex w-full relative flex-col overflow-hidden rounded-lg border border-gray-700 shadow-lg'
+			whileHover={{ scale: 1.05 }}
+			whileTap={{ scale: 0.95 }}
+		>
 			<div className='relative mx-3 mt-3 flex h-60 overflow-hidden rounded-xl'>
-				<img className='object-cover w-full' src={product.image} alt='product image' />
+				<img className='object-cover w-full transition-transform duration-300 ease-in-out hover:scale-110' src={product.image} alt='product image' />
 				<div className='absolute inset-0 bg-black bg-opacity-20' />
 			</div>
 
@@ -40,7 +45,7 @@ const ProductCard = ({ product }) => {
 					Add to cart
 				</button>
 			</div>
-		</div>
+		</motion.div>
 	);
 };
 export default ProductCard;

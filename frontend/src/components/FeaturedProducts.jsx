@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCartStore } from "../stores/useCartStore";
-
+import { motion } from "framer-motion";
 
 const FeaturedProducts = ({ featuredProducts }) => {
 	const [currentIndex, setCurrentIndex] = useState(0);
@@ -39,10 +39,13 @@ const FeaturedProducts = ({ featuredProducts }) => {
 				<h2 className='text-center text-5xl sm:text-6xl font-bold text-emerald-400 mb-4'>Featured</h2>
 				<div className='relative'>
 					<div className='overflow-hidden'>
-						<div
-							className='flex transition-transform duration-300 ease-in-out'
-							style={{ transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)` }}
-						>
+							<motion.div
+								className='flex transition-transform duration-300 ease-in-out'
+								style={{ transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)` }}
+								initial={{ opacity: 0, y: 20 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ duration: 0.5, delay: 0.25 }}
+							>
 							{featuredProducts?.map((product) => (
 								<div key={product._id} className='w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 flex-shrink-0 px-2'>
 									<div className='bg-white bg-opacity-10 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden h-full transition-all duration-300 hover:shadow-xl border border-emerald-500/30'>
@@ -70,7 +73,7 @@ const FeaturedProducts = ({ featuredProducts }) => {
 									</div>
 								</div>
 							))}
-						</div>
+						</motion.div>
 					</div>
 					<button
 						onClick={prevSlide}
