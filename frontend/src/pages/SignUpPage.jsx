@@ -6,7 +6,8 @@ import { useUserStore } from "../stores/useUserStore";
 
 const SignUpPage = () => {
 	const [formData, setFormData] = useState({
-		name: "",
+		firstName: "",
+		lastName: "",
 		email: "",
 		password: "",
 		confirmPassword: "",
@@ -39,22 +40,43 @@ const SignUpPage = () => {
 				<div className='bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10'>
 					<form onSubmit={handleSubmit} className='space-y-6'>
 						<div>
-							<label htmlFor='name' className='block text-sm font-medium text-gray-300'>
-								Full name
+							<label htmlFor='firstName' className='block text-sm font-medium text-gray-300'>
+								First name
 							</label>
 							<div className='mt-1 relative rounded-md shadow-sm'>
 								<div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
 									<User className='h-5 w-5 text-gray-400' aria-hidden='true' />
 								</div>
 								<input
-									id='name'
+									id='firstName'
 									type='text'
 									required
-									value={formData.name}
-									onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+									value={formData.firstName}
+									onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
 									className='block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 rounded-md shadow-sm
 									 placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm'
-									placeholder='John Doe'
+									placeholder='John'
+								/>
+							</div>
+						</div>
+
+						<div>
+							<label htmlFor='lastName' className='block text-sm font-medium text-gray-300'>
+								Last name
+							</label>
+							<div className='mt-1 relative rounded-md shadow-sm'>
+								<div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+									<User className='h-5 w-5 text-gray-400' aria-hidden='true' />
+								</div>
+								<input
+									id='lastName'
+									type='text'
+									required
+									value={formData.lastName}
+									onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+									className='block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 rounded-md shadow-sm
+									 placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm'
+									placeholder='Doe'
 								/>
 							</div>
 						</div>
