@@ -3,6 +3,7 @@ import User from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import { z } from 'zod';
+import cloudinary from '../lib/cloudinary.js';
 
 const generateToken = (userId) => {
     const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
@@ -61,7 +62,7 @@ const sendOtpEmail = async (email, otp) => {
 };
 
 export const signup = async (req, res) => {
-    const { email, password, firstName, lastName } = req.body;
+    const { email, password, firstName, lastName, profilePicture } = req.body;
 
     try {
         signupSchema.parse(req.body);
@@ -73,6 +74,16 @@ export const signup = async (req, res) => {
 
         const otp = generateOtp();
 
+        let cloudinaryResponse = null;
+        if (profilePicture) {
+            try {
+                cloudinaryResponse = await cloudinary.uploader.upload(profilePicture, { folder: "profile_pictures" });
+            } catch (cloudinaryError) {
+                console.error("Cloudinary upload error in signup function:", cloudinaryError.message);
+                return res.status(500).json({ message: "Cloudinary upload failed", error: cloudinaryError.message });
+            }
+        }
+
         const user = await User.create({
             firstName,
             lastName,
@@ -80,6 +91,7 @@ export const signup = async (req, res) => {
             password,
             isAdmin: false,
             otp,
+            profilePicture: cloudinaryResponse?.secure_url || "",
         });
 
         await sendOtpEmail(email, otp);
@@ -89,8 +101,16 @@ export const signup = async (req, res) => {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ message: error.errors });
         }
+        if (error.code === 11000) {
+            console.error("Database error in signup function:", error);
+            return res.status(400).json({ message: 'User already exists' });
+        }
+        if (error.message.includes('nodemailer')) {
+            console.error("Email service error in signup function:", error);
+            return res.status(500).json({ message: 'Failed to send OTP email' });
+        }
         console.error("Unexpected error in signup function:", error);
-        res.status(500).json({ message: 'Something went wrong' });
+        res.status(500).json({ message: 'Something went wrong', error: error.message });
     }
 };
 
@@ -131,7 +151,7 @@ export const verifyOtp = async (req, res) => {
 export const login = async (req, res) => {
 	try {
 		const { email, password } = req.body;
-		const user = await User.findOne({ email });
+        const user = await User.findOne({ email });
 
 		if (user && (await user.comparePassword(password))) {
 			const { accessToken, refreshToken } = generateToken(user._id);
