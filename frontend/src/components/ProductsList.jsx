@@ -58,7 +58,7 @@ const ProductsList = () => {
 								<div className='flex items-center'>
 									<div className='flex-shrink-0 h-10 w-10'>
 										<img
-											className='h-10 w-10 rounded-full object-cover'
+											className='h-10 w-10 rounded-full object-cover transition-transform duration-300 ease-in-out hover:scale-110'
 											src={product.image}
 											alt={product.name}
 										/>
