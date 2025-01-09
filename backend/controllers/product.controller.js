@@ -170,3 +170,57 @@ async function updateFeaturedProductsCache() {
 		console.log("error in update cache function");
 	}
 }
+
+// Add at least 4 products in each category (jeans, t-shirts, shoes, glasses, jackets, suits, bags)
+const initialProducts = [
+	// Jeans
+	{ name: "Blue Jeans", description: "Comfortable blue jeans", price: 49.99, image: "", category: "jeans" },
+	{ name: "Black Jeans", description: "Stylish black jeans", price: 59.99, image: "", category: "jeans" },
+	{ name: "Skinny Jeans", description: "Trendy skinny jeans", price: 69.99, image: "", category: "jeans" },
+	{ name: "Ripped Jeans", description: "Fashionable ripped jeans", price: 79.99, image: "", category: "jeans" },
+	// T-shirts
+	{ name: "White T-shirt", description: "Classic white t-shirt", price: 19.99, image: "", category: "t-shirts" },
+	{ name: "Black T-shirt", description: "Basic black t-shirt", price: 19.99, image: "", category: "t-shirts" },
+	{ name: "Graphic T-shirt", description: "Cool graphic t-shirt", price: 29.99, image: "", category: "t-shirts" },
+	{ name: "V-neck T-shirt", description: "Stylish v-neck t-shirt", price: 24.99, image: "", category: "t-shirts" },
+	// Shoes
+	{ name: "Running Shoes", description: "Comfortable running shoes", price: 89.99, image: "", category: "shoes" },
+	{ name: "Casual Shoes", description: "Stylish casual shoes", price: 79.99, image: "", category: "shoes" },
+	{ name: "Formal Shoes", description: "Elegant formal shoes", price: 99.99, image: "", category: "shoes" },
+	{ name: "Sneakers", description: "Trendy sneakers", price: 69.99, image: "", category: "shoes" },
+	// Glasses
+	{ name: "Sunglasses", description: "Cool sunglasses", price: 49.99, image: "", category: "glasses" },
+	{ name: "Reading Glasses", description: "Comfortable reading glasses", price: 39.99, image: "", category: "glasses" },
+	{ name: "Blue Light Glasses", description: "Protective blue light glasses", price: 59.99, image: "", category: "glasses" },
+	{ name: "Aviator Glasses", description: "Stylish aviator glasses", price: 69.99, image: "", category: "glasses" },
+	// Jackets
+	{ name: "Leather Jacket", description: "Classic leather jacket", price: 199.99, image: "", category: "jackets" },
+	{ name: "Denim Jacket", description: "Trendy denim jacket", price: 99.99, image: "", category: "jackets" },
+	{ name: "Bomber Jacket", description: "Stylish bomber jacket", price: 149.99, image: "", category: "jackets" },
+	{ name: "Winter Jacket", description: "Warm winter jacket", price: 249.99, image: "", category: "jackets" },
+	// Suits
+	{ name: "Business Suit", description: "Elegant business suit", price: 299.99, image: "", category: "suits" },
+	{ name: "Casual Suit", description: "Stylish casual suit", price: 199.99, image: "", category: "suits" },
+	{ name: "Wedding Suit", description: "Classic wedding suit", price: 399.99, image: "", category: "suits" },
+	{ name: "Tuxedo", description: "Formal tuxedo", price: 499.99, image: "", category: "suits" },
+	// Bags
+	{ name: "Backpack", description: "Durable backpack", price: 59.99, image: "", category: "bags" },
+	{ name: "Handbag", description: "Stylish handbag", price: 79.99, image: "", category: "bags" },
+	{ name: "Laptop Bag", description: "Protective laptop bag", price: 99.99, image: "", category: "bags" },
+	{ name: "Travel Bag", description: "Spacious travel bag", price: 129.99, image: "", category: "bags" },
+];
+
+// Function to add initial products to the database
+export const addInitialProducts = async () => {
+	try {
+		for (const product of initialProducts) {
+			await Product.create(product);
+		}
+		console.log("Initial products added successfully");
+	} catch (error) {
+		console.log("Error adding initial products:", error.message);
+	}
+};
+
+// Call the function to add initial products
+addInitialProducts();
