@@ -74,7 +74,8 @@ export const signup = async (req, res) => {
         const otp = generateOtp();
 
         const user = await User.create({
-            name: `${firstName} ${lastName}`,
+            firstName,
+            lastName,
             email,
             password,
             isAdmin: false,
@@ -115,7 +116,8 @@ export const verifyOtp = async (req, res) => {
 
         res.json({
             _id: user._id,
-            name: user.name,
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.email,
             role: user.role,
         });
@@ -136,13 +138,14 @@ export const login = async (req, res) => {
 
 			res.json({
 				_id: user._id,
-				name: user.name,
+				firstName: user.firstName,
+				lastName: user.lastName,
 				email: user.email,
 				role: user.role,
 			});
 		} else {
 			res.status(400).json({ message: "Invalid email or password" });
-		}
+			}
 	} catch (error) {
 		console.log("Error in login controller", error.message);
 		res.status(500).json({ message: error.message });
