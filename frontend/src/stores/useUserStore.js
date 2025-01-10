@@ -21,12 +21,7 @@ export const useUserStore = create((set, get) => ({
 			set({ loading: false });
 		} catch (error) {
 			set({ loading: false });
-			if (error.response && error.response.data && error.response.data.message) {
-				toast.error(error.response.data.message);
-				console.log("Error message:", error.response.data.message); // P4b84
-			} else {
-				toast.error("An error occurred");
-			}
+			toast.error(error.response.data.message || "An error occurred");
 		}
 	},
 
