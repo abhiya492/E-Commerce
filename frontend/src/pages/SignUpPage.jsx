@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { UserPlus, Mail, Lock, User, ArrowRight, Loader, Upload } from "lucide-react";
+import { UserPlus, Mail, Lock, User, ArrowRight, Loader } from "lucide-react";
 import { motion } from "framer-motion";
 import { useUserStore } from "../stores/useUserStore";
 
@@ -11,7 +11,6 @@ const SignUpPage = () => {
 		email: "",
 		password: "",
 		confirmPassword: "",
-		profilePicture: "",
 	});
 
 	const { signup, loading } = useUserStore();
@@ -19,28 +18,6 @@ const SignUpPage = () => {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		signup(formData);
-	};
-
-	const handleImageChange = (e) => {
-		const file = e.target.files[0];
-		if (file) {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				setFormData({ ...formData, profilePicture: reader.result });
-			};
-			reader.readAsDataURL(file);
-		}
-	};
-
-	const validateForm = () => {
-		const { firstName, lastName, email, password, confirmPassword, profilePicture } = formData;
-		if (!firstName || !lastName || !email || !password || !confirmPassword || !profilePicture) {
-			return false;
-		}
-		if (password !== confirmPassword) {
-			return false;
-		}
-		return true;
 	};
 
 	return (
@@ -169,25 +146,13 @@ const SignUpPage = () => {
 							</div>
 						</div>
 
-							<div className='mt-1 flex items-center'>
-								<input type='file' id='profilePicture' className='sr-only' accept='image/*' onChange={handleImageChange} />
-								<label
-									htmlFor='profilePicture'
-									className='cursor-pointer bg-gray-700 py-2 px-3 border border-gray-600 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500'
-								>
-									<Upload className='h-5 w-5 inline-block mr-2' />
-									Upload Profile Picture
-								</label>
-								{formData.profilePicture && <span className='ml-3 text-sm text-gray-400'>Image uploaded</span>}
-							</div>
-
 						<button
 							type='submit'
 							className='w-full flex justify-center py-2 px-4 border border-transparent 
 							rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600
 							 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2
 							  focus:ring-emerald-500 transition duration-150 ease-in-out disabled:opacity-50'
-							disabled={loading || !validateForm()}
+							disabled={loading}
 						>
 							{loading ? (
 								<>
