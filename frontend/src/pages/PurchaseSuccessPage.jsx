@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { useCartStore } from "../stores/useCartStore";
 import axios from "../lib/axios";
 import Confetti from "react-confetti";
-import { motion } from "framer-motion";
 
 const PurchaseSuccessPage = () => {
 	const [isProcessing, setIsProcessing] = useState(true);
@@ -49,12 +48,7 @@ const PurchaseSuccessPage = () => {
 				recycle={false}
 			/>
 
-				<motion.div
-				className='max-w-md w-full bg-gray-800 rounded-lg shadow-xl overflow-hidden relative z-10'
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.5 }}
-			>
+			<div className='max-w-md w-full bg-gray-800 rounded-lg shadow-xl overflow-hidden relative z-10'>
 				<div className='p-6 sm:p-8'>
 					<div className='flex justify-center'>
 						<CheckCircle className='text-emerald-400 w-16 h-16 mb-4' />
@@ -81,15 +75,13 @@ const PurchaseSuccessPage = () => {
 					</div>
 
 					<div className='space-y-4'>
-						<motion.button
+						<button
 							className='w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4
              rounded-lg transition duration-300 flex items-center justify-center'
-							whileHover={{ scale: 1.05 }}
-							whileTap={{ scale: 0.95 }}
 						>
 							<HandHeart className='mr-2' size={18} />
 							Thanks for trusting us!
-						</motion.button>
+						</button>
 						<Link
 							to={"/"}
 							className='w-full bg-gray-700 hover:bg-gray-600 text-emerald-400 font-bold py-2 px-4 
@@ -100,7 +92,7 @@ const PurchaseSuccessPage = () => {
 						</Link>
 					</div>
 				</div>
-			</motion.div>
+			</div>
 		</div>
 	);
 };
