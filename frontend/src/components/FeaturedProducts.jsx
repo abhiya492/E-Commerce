@@ -1,13 +1,20 @@
-import { useEffect, useState } from "react";
-import { ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
-import { useCartStore } from "../stores/useCartStore";
+import { useEffect, useState, useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useUserStore } from "../stores/useUserStore";
+import ProductCard from "./ProductCard";
 
-
-const FeaturedProducts = ({ featuredProducts }) => {
+const FeaturedProducts = ({ featuredProducts = [] }) => {
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState(4);
+	const [isAnimating, setIsAnimating] = useState(false);
+	const slideContainerRef = useRef(null);
+	
+	const { user } = useUserStore();
 
-	const { addToCart } = useCartStore();
+	// Reset current index when products change
+	useEffect(() => {
+		setCurrentIndex(0);
+	}, [featuredProducts]);
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -22,78 +29,113 @@ const FeaturedProducts = ({ featuredProducts }) => {
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
 
+	// Guard against empty array
+	if (!featuredProducts || featuredProducts.length === 0) {
+		return null;
+	}
+
 	const nextSlide = () => {
-		setCurrentIndex((prevIndex) => prevIndex + itemsPerPage);
+		if (isAnimating) return;
+		
+		const maxIndex = featuredProducts.length - itemsPerPage;
+		if (currentIndex >= maxIndex) return;
+		
+		setIsAnimating(true);
+		setCurrentIndex(prev => prev + 1);
+		setTimeout(() => setIsAnimating(false), 500);
 	};
 
 	const prevSlide = () => {
-		setCurrentIndex((prevIndex) => prevIndex - itemsPerPage);
+		if (isAnimating || currentIndex === 0) return;
+		
+		setIsAnimating(true);
+		setCurrentIndex(prev => prev - 1);
+		setTimeout(() => setIsAnimating(false), 500);
 	};
 
 	const isStartDisabled = currentIndex === 0;
 	const isEndDisabled = currentIndex >= featuredProducts.length - itemsPerPage;
 
 	return (
-		<div className='py-12'>
-			<div className='container mx-auto px-4'>
-				<h2 className='text-center text-5xl sm:text-6xl font-bold text-emerald-400 mb-4'>Featured</h2>
-				<div className='relative'>
-					<div className='overflow-hidden'>
-						<div
-							className='flex transition-transform duration-300 ease-in-out'
-							style={{ transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)` }}
-						>
-							{featuredProducts?.map((product) => (
-								<div key={product._id} className='w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 flex-shrink-0 px-2'>
-									<div className='bg-white bg-opacity-10 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden h-full transition-all duration-300 hover:shadow-xl border border-emerald-500/30'>
-										<div className='overflow-hidden'>
-											<img
-												src={product.image}
-												alt={product.name}
-												className='w-full h-48 object-cover transition-transform duration-300 ease-in-out hover:scale-110'
-											/>
-										</div>
-										<div className='p-4'>
-											<h3 className='text-lg font-semibold mb-2 text-white'>{product.name}</h3>
-											<p className='text-emerald-300 font-medium mb-4'>
-												${product.price.toFixed(2)}
-											</p>
-											<button
-												onClick={() => addToCart(product)}
-												className='w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 px-4 rounded transition-colors duration-300 
-												flex items-center justify-center'
-											>
-												<ShoppingCart className='w-5 h-5 mr-2' />
-												Add to Cart
-											</button>
-										</div>
-									</div>
-								</div>
-							))}
-						</div>
+		<div className="py-8">
+			<div className="relative">
+				<div className="overflow-hidden">
+					<div
+						ref={slideContainerRef}
+						className="flex transition-transform duration-500 ease-in-out"
+						style={{ transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)` }}
+					>
+						{featuredProducts.map((product) => (
+							<div 
+								key={product._id} 
+								className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 flex-shrink-0 px-3"
+							>
+								<ProductCard product={product} />
+							</div>
+						))}
 					</div>
-					<button
-						onClick={prevSlide}
-						disabled={isStartDisabled}
-						className={`absolute top-1/2 -left-4 transform -translate-y-1/2 p-2 rounded-full transition-colors duration-300 ${
-							isStartDisabled ? "bg-gray-400 cursor-not-allowed" : "bg-emerald-600 hover:bg-emerald-500"
-						}`}
-					>
-						<ChevronLeft className='w-6 h-6' />
-					</button>
-
-					<button
-						onClick={nextSlide}
-						disabled={isEndDisabled}
-						className={`absolute top-1/2 -right-4 transform -translate-y-1/2 p-2 rounded-full transition-colors duration-300 ${
-							isEndDisabled ? "bg-gray-400 cursor-not-allowed" : "bg-emerald-600 hover:bg-emerald-500"
-						}`}
-					>
-						<ChevronRight className='w-6 h-6' />
-					</button>
 				</div>
+
+				{/* Only show navigation buttons if there are more products than can fit on screen */}
+				{featuredProducts.length > itemsPerPage && (
+					<>
+						<button
+							onClick={prevSlide}
+							disabled={isStartDisabled}
+							className={`absolute top-1/2 -left-3 transform -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full shadow-md transition-all duration-300 ${
+								isStartDisabled 
+									? "bg-dark-200 text-gray-500 cursor-not-allowed" 
+									: "bg-white text-dark hover:bg-primary-50 hover:text-primary-600"
+							}`}
+							aria-label="Previous slide"
+						>
+							<ChevronLeft className="h-5 w-5" />
+						</button>
+
+						<button
+							onClick={nextSlide}
+							disabled={isEndDisabled}
+							className={`absolute top-1/2 -right-3 transform -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full shadow-md transition-all duration-300 ${
+								isEndDisabled 
+									? "bg-dark-200 text-gray-500 cursor-not-allowed" 
+									: "bg-white text-dark hover:bg-primary-50 hover:text-primary-600"
+							}`}
+							aria-label="Next slide"
+						>
+							<ChevronRight className="h-5 w-5" />
+						</button>
+					</>
+				)}
+				
+				{/* Progress indicators - only show if there are enough products */}
+				{featuredProducts.length > itemsPerPage && (
+					<div className="mt-6 flex justify-center space-x-2">
+						{Array.from({ length: Math.min(featuredProducts.length - itemsPerPage + 1, 5) }).map((_, index) => {
+							const actualIndex = featuredProducts.length <= 5 
+								? index 
+								: Math.floor(index * ((featuredProducts.length - itemsPerPage) / 4));
+							
+							return (
+								<button
+									key={index}
+									onClick={() => {
+										if (isAnimating) return;
+										setIsAnimating(true);
+										setCurrentIndex(actualIndex);
+										setTimeout(() => setIsAnimating(false), 500);
+									}}
+									className={`h-2 w-8 rounded-full transition-all duration-300 ${
+										currentIndex === actualIndex ? "bg-primary-500" : "bg-dark-200 hover:bg-primary-300"
+									}`}
+									aria-label={`Go to slide ${index + 1}`}
+								/>
+							);
+						})}
+					</div>
+				)}
 			</div>
 		</div>
 	);
 };
+
 export default FeaturedProducts;

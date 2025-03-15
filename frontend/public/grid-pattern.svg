@@ -1,0 +1,1 @@
+<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg"><pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="white" stroke-width="0.5" opacity="0.2"/></pattern><rect width="32" height="32" fill="url(#grid)" /></svg>

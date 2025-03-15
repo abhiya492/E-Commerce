@@ -71,6 +71,11 @@ export const createProduct = async (req, res) => {
 		category,
 	  });
   
+	  // Update the featured products cache if the product is featured
+	  if (product.isFeatured) {
+	    await updateFeaturedProductsCache();
+	  }
+  
 	  console.log("Product created successfully:", product);
 	  res.status(201).json(product);
 	} catch (error) {
@@ -98,7 +103,13 @@ export const createProduct = async (req, res) => {
 			}
 		}
 
+		const isFeatured = product.isFeatured;
 		await Product.findByIdAndDelete(req.params.id);
+
+		// Update the featured products cache if the deleted product was featured
+		if (isFeatured) {
+		  await updateFeaturedProductsCache();
+		}
 
 		res.json({ message: "Product deleted successfully" });
 	} catch (error) {
@@ -213,6 +224,13 @@ const initialProducts = [
 // Function to add initial products to the database
 export const addInitialProducts = async () => {
 	try {
+		// Check if products already exist before adding
+		const existingProductsCount = await Product.countDocuments();
+		if (existingProductsCount > 0) {
+			console.log("Products already exist, skipping initial product creation");
+			return;
+		}
+
 		for (const product of initialProducts) {
 			await Product.create(product);
 		}
@@ -222,5 +240,5 @@ export const addInitialProducts = async () => {
 	}
 };
 
-// Call the function to add initial products
-addInitialProducts();
+// The function should be called in server.js, not here
+// addInitialProducts();
